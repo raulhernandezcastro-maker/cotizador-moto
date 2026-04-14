@@ -366,7 +366,6 @@
 <div class="container">
 
   <div class="settings-link" style="display:flex;gap:16px;align-items:center;">
-    <a href="cotizador_moto.html" title="Ir al Cotizador">🧮 Cotizador</a>
     <a href="historial_cotizaciones.html" title="Ver historial">📋 Historial</a>
     <a href="#" onclick="pedirClave(); return false;" title="Configuración">⚙️</a>
   </div>
@@ -539,7 +538,7 @@ const EMAILJS_SERVICE_ID  = 'rcv_gmail';   // reemplazar
 const EMAILJS_TEMPLATE_ID = 'template_93wiwu3';  // reemplazar
 
 // URL del cotizador (mismo directorio por defecto)
-const COTIZADOR_URL = 'https://raulhernandezcastro-maker.github.io/cotizador-moto/cotizador_moto.html';
+const COTIZADOR_URL = 'https://zingy-maamoul-acb477.netlify.app/cotizador_moto.html';
 
 // ============================================================
 // CONFIGURACIÓN (editable via modal)
@@ -615,25 +614,43 @@ window.onload = function() {
 // ============================================================
 const DB_KEY = 'rcv_moto_db';
 const DB_DEFAULT = {
-  marcas: [
-    "TRIUMPH","YAMAHA","HONDA","KAWASAKI","SUZUKI","BMW","DUCATI",
-    "KTM","INDIAN","APRILIA","HARLEY-DAVIDSON","ROYAL ENFIELD","BENELLI","CF MOTO"
-  ],
+  marcas: ["APRILIA", "BENDA", "BENELLI", "BMW", "BRP CAN AM", "CAN-AM", "CF MOTO", "CHANGAN", "CHEVROLET", "CYCLONE", "DUCATI", "FIAT", "GENERICO", "HAO JUE", "HARLEY-DAVIDSON", "HONDA", "HUSQVARNA", "INDIAN", "ITALJET", "KAWASAKI", "KEEWAY", "KTM", "MBP", "MORBIDELLI", "MOTOGUZZI", "MV AGUSTA", "QJMOTOR", "ROYAL ENFIELD", "SUZUKI", "TRIUMPH", "TVS", "VESPA", "VOGE", "YAMAHA", "ZONTES"],
   modelos: {
-    "TRIUMPH":["TRIDENT 660","STREET TRIPLE R","TIGER 900","SPEED TWIN 1200","BONNEVILLE T120","ROCKET 3","TIGER SPORT 660","SCRAMBLER 1200"],
-    "YAMAHA":["MT-07","MT-09","R1","R6","Ténéré 700","XSR 700","TRACER 9","NMAX 155","AEROX 155"],
-    "HONDA":["CB 500F","CB 650R","CBR 600RR","CBR 1000RR","Africa Twin","CB1000R","HORNET","PCX 150","FORZA 350"],
-    "KAWASAKI":["Z650","Z900","NINJA 400","NINJA 650","NINJA ZX-6R","VERSYS 650","Z H2","VULCAN S"],
-    "SUZUKI":["GSX-S750","V-STROM 650","BANDIT 650","GSX-R600","GSX-R1000","BURGMAN 400","SV 650"],
-    "BMW":["R 1250 GS","F 900 R","S 1000 RR","G 310 GS","C 400 X","R nineT","F 850 GS"],
-    "DUCATI":["Monster 937","Multistrada V4","Panigale V4","Scrambler Icon","Diavel V4","SuperSport 950"],
-    "KTM":["Duke 390","Duke 890","1290 Super Duke R","790 Adventure","1290 Super Adventure S","RC 390"],
-    "INDIAN":["Scout Bobber","Chieftain","Springfield","Chief","Challenger","FTR 1200"],
-    "APRILIA":["RS 660","Tuono 660","RSV4","Shiver 900","Caponord 1200","SR GT 200"],
-    "HARLEY-DAVIDSON":["Sportster S","Fat Bob","Softail Standard","Street Glide","Road King","Iron 883","Pan America 1250"],
-    "ROYAL ENFIELD":["Classic 350","Meteor 350","Himalayan","Continental GT 650","Interceptor 650"],
-    "BENELLI":["TRK 502","502C","Leoncino 500","302R","TNT 600"],
-    "CF MOTO":["700CL-X Heritage","650NK","450NK","MT 700E","MT 800E"]
+    "APRILIA":["Caponord 1200", "RS 660", "RS457", "RSV4", "RSV4 FACTORY", "RSV4RR", "SR 160", "SR GT 200", "SXR 160", "Shiver 900", "Tuono 660"],
+    "BENDA":["DARK FLAG 500", "NAPOLEON BOB"],
+    "BENELLI":["302 S", "302R", "502C", "752S", "LEONCINO 500 TRAIL", "LEONCINO 800 TRAIL", "Leoncino 500", "TNT 150I", "TNT 600", "TRK 502", "TRK 502X", "TRK 702X"],
+    "BMW":["310 GS", "C 400 X", "C400 GT", "F 700 GS", "F 750 GS", "F 850 GS", "F 850 GS 2 ADVENTURE", "F 850 GS II", "F 900 GS II", "F 900 R", "F800 GS", "F850 GS", "F850 GS I", "F900R", "G 310 GS", "R 1250 GS", "R 1250 GS ADV II", "R 1250 RS", "R 1300 GS ADVENTURE", "R 1300 GS II", "R 1300 RT ASA", "R NINET SCRAMBLER II 1170", "R nineT", "R12 NINET", "R1200 GS", "R1200 GS ADVENTURE", "S 1000 RR", "S1000R", "S1000RR"],
+    "BRP CAN AM":["CANYON RED ROCK", "RYKER RALLY 900"],
+    "CAN-AM":["SPYDER F3 S", "SPYDER RT STS 1330"],
+    "CF MOTO":["450MT", "450NK", "650NK", "700CL-X Heritage", "CF 650", "CF250-A", "CF300", "CF400", "CF400 (450 MT)", "CF450 SR-S", "CF675NK", "CF700-2", "CF800 5", "MT 700E", "MT 800E"],
+    "CHANGAN":["MD201"],
+    "CHEVROLET":["N400 MAX"],
+    "CYCLONE":["RA2", "RX401"],
+    "DUCATI":["DIAVEL 1260 S", "Diavel V4", "MOSNTER PLUS", "MULTIESTRADA", "Monster 937", "Multistrada V4", "Panigale V4", "SCRAMBLER 800 ICON", "Scrambler Icon", "SuperSport 950"],
+    "FIAT":["FIORINO"],
+    "GENERICO":["GENERICO"],
+    "HAO JUE":["NK 150"],
+    "HARLEY-DAVIDSON":["BREAKOUT 117", "FAT BOY 144", "FLDE DELUXE 1C745CC", "FLHCS HERITAGE CLASSIC 1868CC", "FLHR XS", "FLHRC ROAD KING CLASSIC 1745CC", "FLHTCU ULTRA CLASSIC", "FLHTK ULTRA LIMITED", "FLHTKL ULTRA LTD LOW 1745CC", "FLHTKSE ANV CVO ULTRA LTD 1923CC", "FLHXS ANX STREET GLIDE 1745", "FLHXSE CVO STREET", "FLS SOFTAIL SLIM 1690CC", "FLSL 1746 CC", "FLSS SOFTAIL SLIM S", "FLSTC HERITAGE SOFTAIL", "FLSTFBS FAT BOY S 1801CC", "FLTRX ROAD GLIDE 1745CC", "FLTRX ROAD GLIDE 1923 CC", "FXBRS BREAKOUT 114 1868CC", "FXCWC ROCKER", "FXDRS 114 1868CC", "FXS BLACKLINE", "FXSB 103 BREAKOUT 1690C", "Fat Bob", "HERITAGE 114", "Iron 883", "Pan America 1250", "Road King", "SPORTSTER 883", "STREET XG 750", "Softail Standard", "Sportster S", "Street Glide", "VRSCDXA NIGHT ROD SPECIAL 1246CC", "XL 1200 CX ROADSTER", "XL 1200 SPORSTER", "XL 1200X FORTY EIGHT", "XL883 SPORTSTER IRON"],
+    "HONDA":["Africa Twin", "CB 1000R", "CB 190", "CB 300 TWISTER", "CB 500", "CB 500F", "CB 650R", "CB1000R", "CB125F TWISTER", "CB350 HNESS", "CB750", "CBR 1000RR", "CBR 600 RR", "CBR 600RR", "CRF 1000 LD", "CRF 1000LA AFRICA TWIN", "CRF 1100 AFRICA TWIN L", "CRF 150 RB", "CRF 250 R", "CRF 300 L", "CRF 450 R", "CRF110", "CRF1100 AFRICA TWIN ADVENTURE", "CRF1100 AFRICA TWIN LD", "DIO", "ELITE 125", "FORZA 350", "GL 1800 GOLDWING", "HORNET", "NAVI", "NC750 XA", "NC750 XD", "NX190", "NX500", "PCX 150", "VFR 1200 CROSSTOURER", "XL750", "XR 300L", "XR150 L", "XR190 L", "XRE 300"],
+    "HUSQVARNA":["NORDEN 901", "SVARTPILEN 401"],
+    "INDIAN":["CHIEF LIMITED 1890", "CHIEF VINTAGE", "Challenger", "Chief", "Chieftain", "FTR 1200", "ROADMASTER", "SCOUT", "SUPER CHIEF", "Scout Bobber", "Springfield"],
+    "ITALJET":["DRAGSTER"],
+    "KAWASAKI":["EL450ASFNN", "KLR 650", "KLX 230", "NINJA 400", "NINJA 500", "NINJA 650", "NINJA 650 ABS", "NINJA ZX-10R", "NINJA ZX-4 RR", "NINJA ZX-6R", "VERSYS 300 ABS", "VERSYS 650", "VULCAN S", "Z H2", "Z400", "Z500 ABS", "Z650", "Z900", "Z900RS", "ZR900SSFAN", "ZX1003ATFAN", "ZX636JSFAN", "ZX6R"],
+    "KEEWAY":["RK250S", "TX150", "V302C", "VIESTE 300 XDV"],
+    "KTM":["1290 ADVENTUR S", "1290 SUPER ADVENTUTE S", "1290 Super Adventure S", "1290 Super Duke R", "1390 SUPER ADVENTURE R", "250 DUKE", "390 ADVENTURE", "390 DUKE", "790 ADVENTURE R", "790 Adventure", "890 ADVENTURE", "DUKE 200", "Duke 390", "Duke 890", "KTM 250 ADVENTURE", "RC 390", "RC390"],
+    "MBP":["T1002VX"],
+    "MORBIDELLI":["N300", "N502"],
+    "MOTOGUZZI":["V85TT"],
+    "MV AGUSTA":["BRUTALE 800CC", "MV AGUSTA BRUTALE 1000RR"],
+    "QJMOTOR":["SRK 400", "SRT 800 SX"],
+    "ROYAL ENFIELD":["CONTINENTAL GT", "Classic 350", "Continental GT 650", "GRR 450", "HIMALAYAN 452", "HUNTER 350", "Himalayan", "INTERCEPTOR BEAR 650", "Interceptor 650", "METEOR", "METEOR FIREBAL", "METEOR STELLAR", "Meteor 350", "SHOTGUN 650", "SUPER METEOR 650"],
+    "SUZUKI":["BANDIT 650", "BURGMAN 400", "DL1050DE", "DL650XA", "DL800 V-STROM 800", "GIXXER SF FI 150", "GSX 1300 RA", "GSX 150 FRF", "GSX-R1000", "GSX-R600", "GSX-S750", "GSX250F", "GSXR 150", "GSXR600", "GSXS750A", "SV 650", "V STROM 1050", "V STROM 250 SX", "V STROM DE 800", "V-STROM 250 SX", "V-STROM 650"],
+    "TRIUMPH":["BONEVILLE BOBBER", "BONEVILLE SPEEDMASTER", "BONNEVILLE BOBBER", "BONNEVILLE T 1000", "BONNEVILLE T100", "BONNEVILLE T120", "BONNEVILLE T1200", "DAYTONA 660", "DAYTONA 675", "ROCKET 3", "SCRAMBLER 1200", "SCRAMBLER 1200 XC", "SCRAMBLER 1200 XE", "SCRAMBLER 400", "SCRAMBLER900", "SPEED 400", "SPEED TRIPLE 1050CC", "SPEED TRIPLE 1200 RS", "SPEED TWIN", "SPEED TWIN 1200", "SPEED TWIN 900", "STREET SCRAMBLER", "STREET TRIPLE R", "STREET TRIPLE RS", "STREET TRIPLE S", "STREET TWIN", "THRUXTON", "THRUXTON RS", "TIGER 1200", "TIGER 1200 GT PRO", "TIGER 1200 RALLY PRO", "TIGER 800 SPORT", "TIGER 800 XCA", "TIGER 800 XRX", "TIGER 850", "TIGER 900", "TIGER 900 GT", "TIGER 900 GT PRO", "TIGER 900 RALLY", "TIGER 900 RALLY ARAGON EDITION", "TIGER 900 RALLY PRO", "TIGER EXPLORER 1200", "TIGER SPORT 660", "TRIDENT 660"],
+    "TVS":["RAIDER 125 CC"],
+    "VESPA":["GTS SUPER SPORT", "GTS SUPERTECH", "GTV 300CC", "PRIMAVERA 150", "VXL 150CC"],
+    "VOGE":["300 RALLY", "300DS", "500 DSX", "525 DSX", "DS525X", "DS625X", "DS800X RALLY", "DS900X", "RR660S", "SR3"],
+    "YAMAHA":["AEROX 155", "FZ S", "FZ-X", "FZN 250A", "MT 07A", "MT 09A", "MT 10", "MT-03A", "MT-07", "MT-09", "MT-09SP", "N MAX", "NMAX 155", "R1", "R15 A", "R6", "RAY ZR", "TENERE 700", "TRACER 9", "TRACER 9 GT", "TRACER 900 GT", "Ténéré 700", "X MAX 300", "XP 500A", "XSR 700", "XT 1200ZE", "XTZ 150", "XVS-950", "YZF-R1", "YZF-R3A", "YZF-R7"],
+    "ZONTES":["ZT200-U1", "ZT350 T", "ZT350T-E", "ZT368T G"]
   }
 };
 
@@ -874,7 +891,7 @@ async function enviarSolicitud() {
     marca, modelo, anio, ppu, valor: valor.replace(/\./g,''),
     canal, ncot: numCot
   });
-  const cotizadorLink = 'https://raulhernandezcastro-maker.github.io/cotizador-moto/cotizador_moto.html' + '?' + params.toString();
+  const cotizadorLink = 'https://zingy-maamoul-acb477.netlify.app/cotizador_moto.html' + '?' + params.toString();
 
   // Email template params
   const templateParams = {
