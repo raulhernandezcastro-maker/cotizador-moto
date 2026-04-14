@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cotizador de Seguros de Motocicletas - Reale Seguros</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -841,6 +842,11 @@
 // ============================================================
 const DB_KEY = 'rcv_moto_db';
 
+// EmailJS config
+const EJS_PUBLIC_KEY   = 'lSzNdAn7-VF3cZvFW';
+const EJS_SERVICE_ID   = 'rcv_gmail';
+const EJS_TEMPLATE_COT = 'template_ebd1scn';
+
 const DB_DEFAULT = {
   marcas: ["APRILIA", "BENDA", "BENELLI", "BMW", "BRP CAN AM", "CAN-AM", "CF MOTO", "CHANGAN", "CHEVROLET", "CYCLONE", "DUCATI", "FIAT", "GENERICO", "HAO JUE", "HARLEY-DAVIDSON", "HONDA", "HUSQVARNA", "INDIAN", "ITALJET", "KAWASAKI", "KEEWAY", "KTM", "MBP", "MORBIDELLI", "MOTOGUZZI", "MV AGUSTA", "QJMOTOR", "ROYAL ENFIELD", "SUZUKI", "TRIUMPH", "TVS", "VESPA", "VOGE", "YAMAHA", "ZONTES"],
   modelos: {
@@ -908,6 +914,9 @@ window.onload = function() {
   const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   document.getElementById('sum-fecha').textContent =
     hoy.getDate() + ' de ' + meses[hoy.getMonth()] + ' de ' + hoy.getFullYear();
+
+  // Init EmailJS
+  emailjs.init({ publicKey: EJS_PUBLIC_KEY });
 
   // Cargar marcas primero, luego pre-cargar parámetros URL
   cargarMarcas();
@@ -1324,6 +1333,11 @@ function calcular() {
   // Guardar datos para impresión
   const ncot = (window._clienteContacto && window._clienteContacto.ncot) || '';
 
+  // Declarar ncotFinal ANTES de usarlo
+  const ncotFinal = ncot
+    || (window._cotizacion && window._cotizacion.ncot)
+    || generarNumeroCotizadorLocal();
+
   window._cotizacion = {
     fecha: document.getElementById('fecha').value,
     ncot: ncotFinal,
@@ -1336,11 +1350,6 @@ function calcular() {
     cuotaPAT11L, cuotaPAT11M,
     cuotaPAT11L_CLP, cuotaPAT11M_CLP
   };
-
-  // Reutilizar número existente si ya hay una cotización activa para el mismo cliente
-  const ncotFinal = ncot
-    || (window._cotizacion && window._cotizacion.ncot)
-    || generarNumeroCotizadorLocal();
 
   // Guardar en historial del cotizador
   guardarEnHistorial({
@@ -2237,37 +2246,45 @@ function habilitarEnvios() {
   document.getElementById('banner-send-btns').style.display = 'flex';
 }
 
-function enviarCotizacionEmail() {
+async function enviarCotizacionEmail() {
   if (!window._cotizacion || !window._clienteContacto) return;
-  const c = window._cotizacion;
+  const c  = window._cotizacion;
   const cl = window._clienteContacto;
   const descPct = Math.round(c.descuento * 100);
 
-  const asunto = encodeURIComponent('Cotización Seguro Moto — ' + c.marca + ' ' + c.modelo);
-  const cuerpo = encodeURIComponent(
-    'Estimado/a ' + cl.nombre + ',\n\n' +
-    'A continuación le presentamos su cotización de seguro para su motocicleta ' +
-    c.marca + ' ' + c.modelo + ' año ' + c.anio + ':\n\n' +
-    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-    'VALOR MOTO: $' + formatNum(c.valorMotoCLP) + '\n' +
-    'VALOR UF: $' + formatNum(c.valorUF, 2) + '\n' +
-    (descPct > 0 ? 'DESCUENTO APLICADO: ' + descPct + '%\n' : '') +
-    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
-    'FULL COBERTURA (Plan L):\n' +
-    '  Prima Anual: UF ' + formatNum(c.primaL, 2) + '\n' +
-    '  Cuota Aviso/PAC (10 cuotas): UF ' + formatNum(c.cuotaAviso10L, 2) + ' = $' + formatNum(Math.round(c.cuotaAviso10L_CLP)) + '\n' +
-    '  Cuota PAT (11 cuotas): UF ' + formatNum(c.cuotaPAT11L, 2) + ' = $' + formatNum(Math.round(c.cuotaPAT11L_CLP)) + '\n\n' +
-    'PÉRDIDA TOTAL + R. CIVIL (Plan M):\n' +
-    '  Prima Anual: UF ' + formatNum(c.primaM, 2) + '\n' +
-    '  Cuota Aviso/PAC (10 cuotas): UF ' + formatNum(c.cuotaAviso10M, 2) + ' = $' + formatNum(Math.round(c.cuotaAviso10M_CLP)) + '\n' +
-    '  Cuota PAT (11 cuotas): UF ' + formatNum(c.cuotaPAT11M, 2) + ' = $' + formatNum(Math.round(c.cuotaPAT11M_CLP)) + '\n\n' +
-    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-    'Valores expresados en UF del día $' + formatNum(c.valorUF, 2) + '\n' +
-    'Simulación válida por 30 días.\n\n' +
-    'Atentamente,\nRCV Seguros — Corredores de Seguros\nReale Chile Seguros Generales S.A.'
-  );
-  window.open('mailto:' + cl.email + '?subject=' + asunto + '&body=' + cuerpo);
-  showToast('✅ Abriendo cliente de correo...');
+  const btn = document.getElementById('btn-send-email');
+  const orig = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Enviando...';
+
+  const templateParams = {
+    email_cliente:      cl.email,
+    nombre_cliente:     cl.nombre,
+    numero_cotizacion:  c.ncot || '',
+    marca:              c.marca,
+    modelo:             c.modelo,
+    anio:               c.anio,
+    prima_l:            'UF ' + formatNum(c.primaL, 2),
+    cuota_aviso_l:      'UF ' + formatNum(c.cuotaAviso10L, 2) + ' = $' + formatNum(Math.round(c.cuotaAviso10L_CLP)),
+    cuota_pat_l:        'UF ' + formatNum(c.cuotaPAT11L, 2) + ' = $' + formatNum(Math.round(c.cuotaPAT11L_CLP)),
+    prima_m:            'UF ' + formatNum(c.primaM, 2),
+    cuota_aviso_m:      'UF ' + formatNum(c.cuotaAviso10M, 2) + ' = $' + formatNum(Math.round(c.cuotaAviso10M_CLP)),
+    cuota_pat_m:        'UF ' + formatNum(c.cuotaPAT11M, 2) + ' = $' + formatNum(Math.round(c.cuotaPAT11M_CLP)),
+    descuento_texto:    descPct > 0 ? 'Descuento aplicado: ' + descPct + '%' : '',
+    valor_uf:           formatNum(c.valorUF, 2),
+    valor_moto:         formatNum(c.valorMotoCLP),
+  };
+
+  try {
+    await emailjs.send(EJS_SERVICE_ID, EJS_TEMPLATE_COT, templateParams);
+    showToast('✅ Cotización enviada a ' + cl.email);
+  } catch(err) {
+    console.error('EmailJS error:', err);
+    showToast('❌ Error al enviar. Revisa la consola.', true);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = orig;
+  }
 }
 
 function enviarCotizacionWhatsApp() {
