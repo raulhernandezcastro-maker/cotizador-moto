@@ -640,10 +640,6 @@
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 5h16a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1z"/></svg>
             Calcular Primas
           </button>
-          <button class="btn btn-secondary" id="btn-imprimir" onclick="imprimirPDF()" disabled>
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-            Descargar PDF
-          </button>
           <button class="btn btn-danger" onclick="limpiar()">↺ Limpiar</button>
         </div>
         <!-- Banner cliente pre-cargado -->
@@ -772,6 +768,14 @@
           <li>✅ Asistencia Vehicular Tipo A (UF 5)</li>
         </ul>
       </div>
+    </div>
+
+    <!-- Descargar PDF — debajo de resultados -->
+    <div style="text-align:center; margin: 16px 0 4px;">
+      <button class="btn btn-secondary" id="btn-imprimir" onclick="imprimirPDF()" disabled style="width:100%;max-width:340px;padding:13px;font-size:15px;">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+        Descargar PDF
+      </button>
     </div>
 
     <!-- DB Manager toggle -->
@@ -2029,7 +2033,9 @@ function imprimirPDF() {
     // ── FOOTER ALL PAGES ──
     footer();
 
-    doc.save('Simulacion_Moto_' + contratanteNombre + '.pdf');
+    const nombreLimpio = (c.contratante || 'Cotizacion').trim();
+    const ncotStr = (c.ncot || '');
+    doc.save(nombreLimpio + ' (' + ncotStr + ') - Simulacion_Moto.pdf');
     btn.disabled = false;
     btn.innerHTML = originalText;
     showToast('\u2705 PDF descargado correctamente');
