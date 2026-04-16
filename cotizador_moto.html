@@ -1601,7 +1601,7 @@ function imprimirPDF() {
     const mLabel = 'MATERIA Y MONTOS ASEGURADOS;';
     doc.text(mLabel, ML, y);
     doc.setFont('helvetica','bold');
-    const moto = (c.marca||'') + ' ' + (c.modelo||'') + ' A\u00d1O ' + (c.anio||'') + '  PPU';
+    const moto = (c.marca||'') + ' ' + (c.modelo||'') + ' A\u00d1O ' + (c.anio||'') + '  PPU ' + (c.ppu || 'Por informar');
     doc.text(' ' + moto, ML + doc.getTextWidth(mLabel), y);
     y += 5.5;
 
