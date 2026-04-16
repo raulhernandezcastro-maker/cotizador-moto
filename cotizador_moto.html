@@ -1653,40 +1653,51 @@ function imprimirPDF() {
     doc.rect(c0, y, CW, hH);
     y += hH;
 
-    // PRIMA ANUAL row
-    checkPage(8);
-    doc.setFillColor(255,255,255);
-    doc.rect(c0, y, CW, 7, 'F');
-    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(13,17,23);
-    doc.text('PRIMA ANUAL', c0 + cw0/2, y + 4.8, {align:'center'});
-    doc.text('UF ' + formatNum(c.primaL,2), c1 + cw1/2, y + 4.8, {align:'center'});
-    doc.text('UF ' + formatNum(c.primaM,2), c2 + cw2/2, y + 4.8, {align:'center'});
-    doc.setDrawColor(170,170,170); doc.setLineWidth(0.3);
-    doc.rect(c0, y, CW, 7); doc.line(c1,y,c1,y+7); doc.line(c2,y,c2,y+7);
-    y += 7;
+    // ── PRIMA ANUAL + CUOTAS: unified table, same 3-col grid ──
+    // Single vertical divider at 45% only — NO divider between col2 and col3
+    // "Aviso"/"PAT" floats centred across cols 2+3
+    // Last 2 PAT rows: yellow background
+    const tRH = 7;
+    const tXL = ML;               // left edge
+    const tXD = ML + CW*0.45;     // single divider at 45%
+    const tXR = ML + CW;          // right edge
+    const tVL = tXD + CW*0.275/2; // centre of col2
+    const tVC = tXD + CW*0.275;   // centre between col2 and col3 (Aviso/PAT)
+    const tVR = tXD + CW*0.275*1.5; // centre of col3
 
-    // Cuotas table (4-column)
-    const cw = [CW*0.42, CW*0.175, CW*0.115, CW*0.175];
-    const cx = [ML, ML+cw[0], ML+cw[0]+cw[1], ML+cw[0]+cw[1]+cw[2]];
-    const cuotasRows = [
-      { label:'Valor Cuota PAC/ P\u00e1gina UF (10 Cuotas)', v1:'UF '+formatNum(c.cuotaAviso10L,2), mid:'Aviso', v2:'UF '+formatNum(c.cuotaAviso10M,2), bg:[242,242,242] },
-      { label:'Valor Cuota $', v1:'$'+formatNum(Math.round(c.cuotaAviso10L_CLP)), mid:'', v2:'$'+formatNum(Math.round(c.cuotaAviso10M_CLP)), bg:[255,255,255] },
-      { label:'Valor Cuota PAT UF (11 Cuotas)', v1:'UF '+formatNum(c.cuotaPAT11L,2), mid:'PAT', v2:'UF '+formatNum(c.cuotaPAT11M,2), bg:[242,242,242] },
-      { label:'Valor Cuota PAT (TARJETA) 11 CUOTAS $', v1:'$'+formatNum(Math.round(c.cuotaPAT11L_CLP)), mid:'', v2:'$'+formatNum(Math.round(c.cuotaPAT11M_CLP)), bg:[255,242,204] },
+    const allRows = [
+      { label:'PRIMA ANUAL',                           v1:'UF '+formatNum(c.primaL,2),                   mid:'',      v2:'UF '+formatNum(c.primaM,2),                   bg:[255,255,255], center:true  },
+      { label:'Valor Cuota PAC/ P\u00e1gina UF (10 Cuotas)', v1:'UF '+formatNum(c.cuotaAviso10L,2),           mid:'Aviso', v2:'UF '+formatNum(c.cuotaAviso10M,2),           bg:[242,242,242], center:false },
+      { label:'Valor Cuota $',                         v1:'$'+formatNum(Math.round(c.cuotaAviso10L_CLP)), mid:'',      v2:'$'+formatNum(Math.round(c.cuotaAviso10M_CLP)), bg:[255,255,255], center:false },
+      { label:'Valor Cuota PAT UF (11 Cuotas)',        v1:'UF '+formatNum(c.cuotaPAT11L,2),              mid:'PAT',   v2:'UF '+formatNum(c.cuotaPAT11M,2),              bg:[255,242,204], center:false },
+      { label:'Valor Cuota PAT (TARJETA) 11 CUOTAS $', v1:'$'+formatNum(Math.round(c.cuotaPAT11L_CLP)),  mid:'',      v2:'$'+formatNum(Math.round(c.cuotaPAT11M_CLP)),  bg:[255,242,204], center:false },
     ];
-    cuotasRows.forEach(row => {
-      checkPage(8);
+
+    allRows.forEach((row, ri) => {
+      checkPage(tRH + 2);
       doc.setFillColor(row.bg[0], row.bg[1], row.bg[2]);
-      doc.rect(cx[0], y, CW, 7, 'F');
-      doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(13,17,23);
-      doc.text(row.label, cx[0]+3, y+4.8);
-      doc.text(row.v1,  cx[1]+cw[1]/2, y+4.8, {align:'center'});
-      doc.text(row.mid, cx[2]+cw[2]/2, y+4.8, {align:'center'});
-      doc.text(row.v2,  cx[3]+cw[3]/2, y+4.8, {align:'center'});
+      doc.rect(tXL, y, CW, tRH, 'F');
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(row.center ? 9 : 8.5);
+      doc.setTextColor(13,17,23);
+      // col1 label
+      if (row.center) {
+        doc.text(row.label, tXL + CW*0.45/2, y+4.8, {align:'center'});
+      } else {
+        doc.text(row.label, tXL+3, y+4.8);
+      }
+      // col2+3 values — all rows: v1 in col2, v2 in col3, mid centred between both
+      doc.text(row.v1, tVL, y+4.8, {align:'center'});
+      doc.text(row.v2, tVR, y+4.8, {align:'center'});
+      if (row.mid) doc.text(row.mid, tVC, y+4.8, {align:'center'});
+      // borders: outer frame + divider + horizontal separators
       doc.setDrawColor(170,170,170); doc.setLineWidth(0.3);
-      doc.rect(cx[0],y,CW,7);
-      doc.line(cx[1],y,cx[1],y+7); doc.line(cx[2],y,cx[2],y+7); doc.line(cx[3],y,cx[3],y+7);
-      y += 7;
+      doc.line(tXL, y,      tXL, y+tRH);  // left
+      doc.line(tXR, y,      tXR, y+tRH);  // right
+      doc.line(tXD, y,      tXD, y+tRH);  // vertical divider at 45%
+      doc.line(tXL, y,      tXR, y);      // top of every row
+      doc.line(tXL, y+tRH,  tXR, y+tRH); // bottom of every row
+      y += tRH;
     });
     y += 4;
 
