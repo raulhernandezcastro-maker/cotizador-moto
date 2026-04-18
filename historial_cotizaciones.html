@@ -592,23 +592,25 @@ function actualizarStats() {
 }
 
 function filtrarTabla() {
-  const busq = document.getElementById('search-input').value.toLowerCase();
-  const canal = document.getElementById('filter-canal').value;
+  const busq   = document.getElementById('search-input').value.toLowerCase();
+  const canal  = document.getElementById('filter-canal').value;
   const estado = document.getElementById('filter-estado').value;
+  const origen = document.getElementById('filter-origen') ? document.getElementById('filter-origen').value : '';
 
   historialFiltrado = historial.filter(s => {
     const matchBusq = !busq || [
       s.numCot, s.nombre, s.rut, s.marca, s.modelo, s.email, s.celular
     ].some(v => v && v.toLowerCase().includes(busq));
 
-    const matchCanal = !canal || s.canal === canal;
+    const matchCanal  = !canal  || s.canal  === canal;
+    const matchOrigen = !origen || s.origen === origen;
 
     const dias = diasVigencia(s.fecha);
     const matchEstado = !estado ||
       (estado === 'vigente' && dias > 0) ||
       (estado === 'vencida' && dias <= 0);
 
-    return matchBusq && matchCanal && matchEstado;
+    return matchBusq && matchCanal && matchOrigen && matchEstado;
   });
 
   // Sort
