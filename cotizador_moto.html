@@ -984,11 +984,13 @@ function preCargarDesdURL(params) {
   const ppuParam     = decodeURIComponent(params.get('ppu') || '');
 
   // Guardar datos del cliente para envío posterior
+  const ncotParam = decodeURIComponent(params.get('ncot') || '');
   window._clienteContacto = {
     email: emailCliente,
     celular: celularCliente,
     canal: canalCliente,
-    nombre: nombre
+    nombre: nombre,
+    ncot: ncotParam
   };
 
   // Pre-llenar campos de texto
@@ -1088,6 +1090,9 @@ function getUFFromExcelData(date) {
   const key = date.toISOString().split('T')[0];
   return UF_EXCEL[key] || null;
 }
+
+// Historial key compartida
+const HISTORIAL_KEY = 'rcv_solicitudes_historial';
 
 // ============================================================
 // MARCAS Y MODELOS
@@ -1367,8 +1372,10 @@ function calcular() {
 
   document.getElementById('btn-imprimir').disabled = false;
   if (typeof habilitarEnvios === 'function') habilitarEnvios();
-  // Si no viene de solicitud, ofrecer ingresar contacto
-  if (!window._clienteContacto || (!window._clienteContacto.email && !window._clienteContacto.celular)) {
+  // Si no viene de solicitud (sin email ni celular), ofrecer ingresar contacto
+  const vieneDeSolicitud = window._clienteContacto &&
+    (window._clienteContacto.email || window._clienteContacto.celular);
+  if (!vieneDeSolicitud) {
     setTimeout(() => abrirModalContacto(), 800);
   }
   showToast('✅ Primas calculadas correctamente');
@@ -2319,7 +2326,6 @@ function enviarCotizacionWhatsApp() {
 // ============================================================
 // HISTORIAL
 // ============================================================
-const HISTORIAL_KEY = 'rcv_solicitudes_historial';
 const NETLIFY_BASE  = 'https://zingy-maamoul-acb477.netlify.app';
 
 function getHistorial() {
@@ -2495,6 +2501,10 @@ function guardarContactoModal() {
   window._clienteContacto.canal = canal;
   // Update historial entry with contact info
   if (window._cotizacion) {
+    // Also enable the real send buttons
+    document.getElementById('btn-send-email').disabled = false;
+    document.getElementById('btn-send-wsp').disabled   = false;
+    document.getElementById('banner-send-btns').style.display = 'flex';
     guardarEnHistorial(Object.assign({}, {
       numCot:  window._cotizacion.ncot,
       nombre:  window._cotizacion.contratante,
@@ -2522,16 +2532,7 @@ function guardarContactoModal() {
   showToast('✅ Datos de contacto guardados');
 }
 
-function habilitarEnvios() {
-  // Enable/show send buttons if contact info present
-  const tiene = window._clienteContacto &&
-    (window._clienteContacto.email || window._clienteContacto.celular);
-  // The send buttons already exist; just update any disabled state
-  const btnWsp = document.getElementById('btn-enviar-wsp');
-  const btnEmail = document.getElementById('btn-enviar-email');
-  if (btnWsp)   btnWsp.disabled   = !tiene;
-  if (btnEmail) btnEmail.disabled = !tiene;
-}
+
 
 
 </script>
