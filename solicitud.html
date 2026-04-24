@@ -313,9 +313,21 @@
     .card-body { padding: 18px; }
     .contact-options { flex-direction: column; }
   }
+
+  /* Modo público: ocultar navegación */
+  body.modo-publico #nav-principal { display: none !important; }
 </style>
 </head>
 <body>
+<script>
+  if (new URLSearchParams(window.location.search).get('modo') === 'publico') {
+    document.documentElement.classList.add('modo-publico');
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.classList.add('modo-publico');
+      window._modoPublico = true;
+    });
+  }
+</script>
 
 <!-- HEADER -->
 <header class="header">
@@ -330,46 +342,21 @@
       style="height:46px;width:140px;border-radius:7px;object-fit:contain;background:#fff;padding:2px 6px;">
   </div>
 </header>
-
-<!-- SETTINGS MODAL -->
-<div class="modal-overlay" id="modal-settings">
-  <div class="modal">
-    <h3>⚙️ Configuración</h3>
-    <div class="modal-note">
-      Aquí puedes cambiar el correo al que llegan las solicitudes de cotización.
-      Solo visible para administradores.
-    </div>
-    <div class="form-group">
-      <label>Correo de destino</label>
-      <input type="email" id="setting-email" class="form-control"
-        placeholder="cotizaciones@rcvseguros.cl">
-    </div>
-    <div class="form-group" style="margin-top:12px;">
-      <label>Número WhatsApp del corredor</label>
-      <input type="text" id="setting-wsp" class="form-control"
-        placeholder="56912345678">
-      <span class="field-hint" style="color:var(--gris-dark);">Sin +, sin espacios. Ej: 56961213732</span>
-    </div>
-    <div class="form-group" style="margin-top:12px;">
-      <label>Clave de administrador</label>
-      <input type="password" id="setting-clave" class="form-control" placeholder="Clave actual o nueva">
-      <span class="field-hint" style="color:var(--gris-dark);">Cambia esta clave para proteger la configuración</span>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-modal cancel" onclick="cerrarModal()">Cancelar</button>
-      <button class="btn-modal save" onclick="guardarConfig()">Guardar</button>
-    </div>
+<!-- NAV BAR -->
+<nav id="nav-principal" style="background:#1F3260;border-bottom:3px solid #F5C800;">
+  <div style="max-width:1100px;margin:0 auto;padding:0 20px;display:flex;gap:6px;align-items:center;height:38px;">
+    <a href="index.html" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;color:#fff;background:rgba(255,255,255,0.12);transition:background 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">🏠 Inicio</a>
+    <a href="solicitud.html" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;color:#F5C800;background:rgba(255,255,255,0.08);transition:background 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">📋 Solicitud</a>
+    <a href="cotizador_moto.html" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;color:#F5C800;background:rgba(255,255,255,0.08);transition:background 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">🧮 Cotizador</a>
+    <a href="historial_cotizaciones.html" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;color:#F5C800;background:rgba(255,255,255,0.08);transition:background 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">📊 Historial</a>
   </div>
-</div>
+</nav>
+
 
 <!-- MAIN -->
 <div class="container">
 
-  <div class="settings-link" style="display:flex;gap:16px;align-items:center;">
-    <a href="index.html" title="Menú principal">🏠 Inicio</a>
-    <a href="historial_cotizaciones.html" title="Ver historial">📋 Historial</a>
-    <a href="#" onclick="pedirClave(); return false;" title="Configuración">⚙️</a>
-  </div>
+
 
   <!-- HERO -->
   <div class="hero" id="hero-panel">
