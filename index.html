@@ -41,6 +41,21 @@
   .menu-card.historial .card-btn:hover{background:#009b7d;}
   .page-footer{text-align:center;font-size:11px;color:var(--gris-dark);margin-top:40px;line-height:1.8;}
   @media(max-width:640px){.menu-grid{grid-template-columns:1fr;max-width:360px;margin:0 auto;}}
+
+  /* Settings modal */
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:500; align-items:center; justify-content:center; }
+  .modal-overlay.open { display:flex; }
+  .modal { background:#fff; border-radius:14px; padding:28px; width:90%; max-width:440px; box-shadow:0 8px 40px rgba(26,58,107,0.18); }
+  .modal h3 { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:16px; color:var(--azul); text-transform:uppercase; letter-spacing:1px; margin-bottom:16px; }
+  .modal-note { font-size:11px; color:var(--gris-dark); background:var(--gris); border-radius:8px; padding:10px 12px; margin-bottom:16px; line-height:1.6; }
+  .modal-actions { display:flex; gap:10px; margin-top:16px; }
+  .btn-modal { flex:1; padding:10px; border-radius:8px; border:none; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:14px; cursor:pointer; letter-spacing:0.5px; }
+  .btn-modal.save { background:var(--azul); color:#fff; }
+  .btn-modal.cancel { background:var(--gris); color:var(--gris-dark); }
+  .form-control-idx { background:var(--gris); border:2px solid var(--gris-mid); border-radius:8px; padding:10px 14px; font-size:14px; width:100%; margin-top:4px; font-family:'Barlow',sans-serif; }
+  .form-group-idx { display:flex; flex-direction:column; margin-bottom:12px; }
+  .form-group-idx label { font-size:11px; font-weight:700; color:var(--azul); text-transform:uppercase; letter-spacing:0.8px; }
+  .field-hint-idx { font-size:10px; color:var(--gris-dark); margin-top:3px; }
 </style>
 </head>
 <body>
@@ -54,6 +69,17 @@
     <img id="logo-rcv" src="" alt="RCV Seguros" style="height:46px;width:100px;border-radius:7px;object-fit:contain;background:#fff;padding:2px 6px;">
   </div>
 </header>
+<!-- NAV BAR -->
+<nav style="background:#1F3260;border-bottom:3px solid #F5C800;">
+  <div style="max-width:1100px;margin:0 auto;padding:0 20px;display:flex;gap:6px;align-items:center;height:38px;">
+    <a href="index.html" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;color:#fff;background:rgba(255,255,255,0.12);transition:background 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">🏠 Inicio</a>
+    <a href="solicitud.html" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;color:#F5C800;background:rgba(255,255,255,0.08);transition:background 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">📋 Solicitud</a>
+    <a href="cotizador_moto.html" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;color:#F5C800;background:rgba(255,255,255,0.08);transition:background 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">🧮 Cotizador</a>
+    <a href="historial_cotizaciones.html" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;color:#F5C800;background:rgba(255,255,255,0.08);transition:background 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">📊 Historial</a>
+    <a href="#" onclick="pedirClave();return false;" style="margin-left:auto;display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;color:#fff;background:rgba(255,255,255,0.12);transition:background 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">⚙️ Config</a>
+  </div>
+</nav>
+
 <div class="container">
   <div class="hero">
     <div class="hero-icon">🏍️</div>
@@ -94,6 +120,73 @@ window.onload=function(){
   document.getElementById('logo-reale').src='data:image/jpeg;base64,'+REALE_B64;
   document.getElementById('logo-rcv').src='data:image/jpeg;base64,'+RCV_B64;
 };
+
+// ── Configuración ──────────────────────────────────────────
+const CONFIG_KEY = 'rcv_form_config';
+function getConfig() {
+  try {
+    const s = localStorage.getItem(CONFIG_KEY);
+    return s ? JSON.parse(s) : { emailDestino:'raul.hernandez@rcvseguros.cl', wspNumero:'56961213732' };
+  } catch(e) { return { emailDestino:'raul.hernandez@rcvseguros.cl', wspNumero:'56961213732' }; }
+}
+function saveConfig(cfg) { localStorage.setItem(CONFIG_KEY, JSON.stringify(cfg)); }
+
+function pedirClave() {
+  const clave = prompt('Ingresa la clave de administrador:');
+  if (clave === null) return;
+  const cfg = getConfig();
+  if (clave === (cfg.adminClave || 'rcv2026')) { abrirModal(); }
+  else { alert('Clave incorrecta'); }
+}
+function abrirModal() {
+  const cfg = getConfig();
+  document.getElementById('setting-email').value = cfg.emailDestino || '';
+  document.getElementById('setting-wsp').value   = cfg.wspNumero   || '';
+  document.getElementById('setting-clave').value = cfg.adminClave  || 'rcv2026';
+  document.getElementById('modal-settings').classList.add('open');
+}
+function cerrarModal() { document.getElementById('modal-settings').classList.remove('open'); }
+function guardarConfig() {
+  const email = document.getElementById('setting-email').value.trim();
+  const wsp   = document.getElementById('setting-wsp').value.trim().replace(/\D/g,'');
+  const clave = document.getElementById('setting-clave').value.trim();
+  if (!email) { alert('Ingresa un correo válido'); return; }
+  if (!clave || clave.length < 4) { alert('La clave debe tener al menos 4 caracteres'); return; }
+  saveConfig({ emailDestino: email, wspNumero: wsp, adminClave: clave });
+  cerrarModal();
+  alert('✅ Configuración guardada');
+}
+
 </script>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="modal-settings">
+  <div class="modal">
+    <h3>⚙️ Configuración</h3>
+    <div class="modal-note">
+      Cambia el correo y WhatsApp al que llegan las solicitudes de cotización.<br>
+      Solo visible para administradores.
+    </div>
+    <div class="form-group-idx">
+      <label>Correo de destino</label>
+      <input type="email" id="setting-email" class="form-control-idx" placeholder="cotizaciones@rcvseguros.cl">
+    </div>
+    <div class="form-group-idx">
+      <label>Número WhatsApp del corredor</label>
+      <input type="text" id="setting-wsp" class="form-control-idx" placeholder="56912345678">
+      <span class="field-hint-idx">Sin +, sin espacios. Ej: 56961213732</span>
+    </div>
+    <div class="form-group-idx">
+      <label>Clave de administrador</label>
+      <input type="password" id="setting-clave" class="form-control-idx" placeholder="Clave actual o nueva">
+      <span class="field-hint-idx">Cambia esta clave para proteger la configuración</span>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal cancel" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-modal save" onclick="guardarConfig()">Guardar</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
