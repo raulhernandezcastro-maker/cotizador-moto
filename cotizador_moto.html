@@ -592,15 +592,10 @@
 <!-- NAV BAR -->
 <nav style="background:#1F3260;border-bottom:3px solid #F5C800;">
   <div style="max-width:1100px;margin:0 auto;padding:0 20px;display:flex;gap:6px;align-items:center;height:38px;">
-    <a href="index.html" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;color:#fff;background:rgba(255,255,255,0.12);transition:background 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">
-      🏠 Inicio
-    </a>
-    <a href="solicitud.html" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;color:#F5C800;background:rgba(255,255,255,0.08);transition:background 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
-      📋 Solicitud
-    </a>
-    <a href="historial_cotizaciones.html" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;color:#F5C800;background:rgba(255,255,255,0.08);transition:background 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
-      📊 Historial
-    </a>
+    <a href="index.html" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;color:#fff;background:rgba(255,255,255,0.12);transition:background 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">🏠 Inicio</a>
+    <a href="solicitud.html" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;color:#F5C800;background:rgba(255,255,255,0.08);transition:background 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">📋 Solicitud</a>
+    <a href="cotizador_moto.html" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;color:#F5C800;background:rgba(255,255,255,0.08);transition:background 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">🧮 Cotizador</a>
+    <a href="historial_cotizaciones.html" style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:6px;text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:0.5px;text-transform:uppercase;color:#F5C800;background:rgba(255,255,255,0.08);transition:background 0.18s;" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">📊 Historial</a>
   </div>
 </nav>
 
@@ -2318,21 +2313,39 @@ function enviarCotizacionWhatsApp() {
   if (tel.startsWith('9') && tel.length === 9) tel = '56' + tel;
   else if (!tel.startsWith('56')) tel = '56' + tel;
 
+  const linea = '--------------------------------';
+
   const msg = encodeURIComponent(
-    '🏍️ *Cotización Seguro Moto — RCV Seguros*\n\n' +
-    'Estimado/a *' + cl.nombre + '*,\n\n' +
-    'Aquí su cotización para ' + c.marca + ' ' + c.modelo + ' ' + c.anio + ':\n\n' +
-    '📋 *FULL COBERTURA (Plan L)*\n' +
-    '  • Prima Anual: UF ' + formatNum(c.primaL, 2) + '\n' +
-    '  • Cuota Aviso/PAC (10 c): $' + formatNum(Math.round(c.cuotaAviso10L_CLP)) + '\n' +
-    '  • Cuota PAT (11 c): $' + formatNum(Math.round(c.cuotaPAT11L_CLP)) + '\n\n' +
-    '📋 *PÉRD. TOTAL + R. CIVIL (Plan M)*\n' +
-    '  • Prima Anual: UF ' + formatNum(c.primaM, 2) + '\n' +
-    '  • Cuota Aviso/PAC (10 c): $' + formatNum(Math.round(c.cuotaAviso10M_CLP)) + '\n' +
-    '  • Cuota PAT (11 c): $' + formatNum(Math.round(c.cuotaPAT11M_CLP)) + '\n\n' +
-    (descPct > 0 ? '✅ Descuento aplicado: ' + descPct + '%\n\n' : '') +
-    '_Valores en UF del día $' + formatNum(c.valorUF, 2) + '. Simulación válida 30 días._\n\n' +
-    '¿Le interesa alguno de los planes? Con gusto le enviamos la simulación completa en PDF. 😊'
+    '🏍️ *COTIZACION SEGURO MOTO*\n' +
+    '_RCV Seguros — Corredores de Seguros_\n\n' +
+    'Estimado/a *' + cl.nombre.toUpperCase() + '*,\n\n' +
+    'Le presentamos su cotizacion para:\n' +
+    '*' + c.marca + ' ' + c.modelo + ' ' + c.anio + '*\n' +
+    (c.ppu ? 'PPU: ' + c.ppu + '\n' : '') +
+    '\n' + linea + '\n' +
+    '✅ *PLAN L — FULL COBERTURA*\n' +
+    linea + '\n' +
+    'Prima Anual: UF ' + formatNum(c.primaL, 2) + '\n\n' +
+    '💳 *FORMAS DE PAGO:*\n' +
+    '  PAC/Aviso (10 cuotas)\n' +
+    '  👉 *$ ' + formatNum(Math.round(c.cuotaAviso10L_CLP)) + ' /mes*\n' +
+    '  PAT (11 cuotas)\n' +
+    '  👉 *$ ' + formatNum(Math.round(c.cuotaPAT11L_CLP)) + ' /mes*\n' +
+    '\n' + linea + '\n' +
+    '☑️ *PLAN M — PERDIDA TOTAL + R. CIVIL*\n' +
+    linea + '\n' +
+    'Prima Anual: UF ' + formatNum(c.primaM, 2) + '\n\n' +
+    '💳 *FORMAS DE PAGO:*\n' +
+    '  PAC/Aviso (10 cuotas)\n' +
+    '  👉 *$ ' + formatNum(Math.round(c.cuotaAviso10M_CLP)) + ' /mes*\n' +
+    '  PAT (11 cuotas)\n' +
+    '  👉 *$ ' + formatNum(Math.round(c.cuotaPAT11M_CLP)) + ' /mes*\n' +
+    '\n' + linea + '\n' +
+    (descPct > 0 ? '🎁 Descuento aplicado: *' + descPct + '%*\n' : '') +
+    '_Valores en UF del dia $ ' + formatNum(c.valorUF, 2) + '._\n' +
+    '_Simulacion valida por 30 dias._\n\n' +
+    'Le podemos enviar la simulacion completa en PDF con todos los detalles de cobertura. 😊\n\n' +
+    '_RCV Seguros — Corredores de Seguros_'
   );
   window.open('https://wa.me/' + tel + '?text=' + msg, '_blank');
   showToast('✅ Abriendo WhatsApp...');
