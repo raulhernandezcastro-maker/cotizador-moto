@@ -684,14 +684,7 @@
             📋 Solicitud recibida desde formulario
           </div>
           <div style="font-size:13px;color:var(--negro);line-height:1.8;" id="banner-cliente-info"></div>
-          <div style="margin-top:12px;display:none;gap:10px;flex-wrap:wrap;" id="banner-send-btns">
-            <button class="btn btn-secondary" style="flex:1;min-width:160px;" id="btn-send-email" onclick="enviarCotizacionEmail()" disabled>
-              📧 Enviar por Email
-            </button>
-            <button class="btn" style="flex:1;min-width:160px;background:#25D366;color:#fff;" id="btn-send-wsp" onclick="enviarCotizacionWhatsApp()" disabled>
-              💬 Enviar por WhatsApp
-            </button>
-          </div>
+
         </div>
       </div>
     </div>
@@ -767,6 +760,21 @@
     </div>
   </div>
 
+  <!-- BOTONES ACCIÓN: Descargar PDF + Enviar -->
+  <div id="acciones-panel" style="display:none; margin-top:16px;">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+      <button class="btn btn-secondary" id="btn-imprimir" onclick="imprimirPDF()" style="flex:1;min-width:180px;max-width:280px;padding:13px;">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+        Descargar PDF
+      </button>
+      <button class="btn btn-secondary" id="btn-send-email" onclick="enviarCotizacionEmail()" style="flex:1;min-width:180px;max-width:280px;padding:13px;" disabled>
+        📧 Enviar por Email
+      </button>
+      <button class="btn" id="btn-send-wsp" onclick="enviarCotizacionWhatsApp()" style="flex:1;min-width:180px;max-width:280px;padding:13px;background:#25D366;color:#fff;" disabled>
+        💬 Enviar por WhatsApp
+      </button>
+    </div>
+  </div>
 
 </div>
 
@@ -1280,6 +1288,8 @@ function calcular() {
   rc.classList.add('results-section','visible');
   rc.style.display = 'block';
 
+  // Mostrar panel de botones
+  document.getElementById('acciones-panel').style.display = 'block';
   document.getElementById('btn-imprimir').disabled = false;
   if (typeof habilitarEnvios === 'function') habilitarEnvios();
   // Cotizador público: siempre ofrecer contacto
@@ -2152,9 +2162,13 @@ function mostrarBannerCliente(params) {
 }
 
 function habilitarEnvios() {
-  document.getElementById('btn-send-email').disabled = false;
-  document.getElementById('btn-send-wsp').disabled = false;
-  document.getElementById('banner-send-btns').style.display = 'flex';
+  const tiene = window._clienteContacto &&
+    (window._clienteContacto.email || window._clienteContacto.celular);
+  document.getElementById('btn-send-email').disabled = !tiene;
+  document.getElementById('btn-send-wsp').disabled   = !tiene;
+  // legacy banner (only present if came from solicitud)
+  const bsb = document.getElementById('banner-send-btns');
+  if (bsb) bsb.style.display = 'flex';
 }
 
 async function enviarCotizacionEmail() {
@@ -2428,7 +2442,6 @@ function guardarContactoModal() {
     // Also enable the real send buttons
     document.getElementById('btn-send-email').disabled = false;
     document.getElementById('btn-send-wsp').disabled   = false;
-    document.getElementById('banner-send-btns').style.display = 'flex';
     guardarEnHistorial(Object.assign({}, {
       numCot:  window._cotizacion.ncot,
       nombre:  window._cotizacion.contratante,
