@@ -796,22 +796,27 @@
       </div>
     </div>
 
-    <!-- Descargar PDF — debajo de resultados -->
-    <div style="text-align:center; margin: 16px 0 4px;">
-      <button class="btn btn-secondary" id="btn-imprimir" onclick="imprimirPDF()" disabled style="width:100%;max-width:340px;padding:13px;font-size:15px;">
+    <!-- Botones acción: Enviar y Descargar -->
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin:18px 0 4px;">
+      <button id="btn-enviar-accion" onclick="abrirModalContacto()" disabled
+        style="flex:1;min-width:180px;padding:13px;border-radius:10px;border:none;
+               background:var(--azul);color:#fff;font-family:'Barlow Condensed',sans-serif;
+               font-weight:700;font-size:15px;letter-spacing:0.5px;cursor:pointer;
+               display:flex;align-items:center;justify-content:center;gap:8px;
+               opacity:0.5;transition:all 0.2s;">
+        📨 Enviar Cotización
+      </button>
+      <button class="btn btn-secondary" id="btn-imprimir" onclick="imprimirPDF()" disabled
+        style="flex:1;min-width:180px;padding:13px;font-size:15px;opacity:0.5;transition:all 0.2s;">
         <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
         Descargar PDF
       </button>
     </div>
 
-    <!-- Enviar por Email / WhatsApp -->
-    <div id="banner-send-btns" style="display:none;margin:10px 0 16px;gap:10px;flex-wrap:wrap;justify-content:center;">
-      <button class="btn btn-secondary" style="flex:1;min-width:180px;max-width:280px;" id="btn-send-email" onclick="enviarCotizacionEmail()" disabled>
-        📧 Enviar por Email
-      </button>
-      <button class="btn" style="flex:1;min-width:180px;max-width:280px;background:#25D366;color:#fff;" id="btn-send-wsp" onclick="enviarCotizacionWhatsApp()" disabled>
-        💬 Enviar por WhatsApp
-      </button>
+    <!-- (banner-send-btns kept for internal flow compatibility) -->
+    <div id="banner-send-btns" style="display:none;">
+      <button id="btn-send-email" onclick="enviarCotizacionEmail()" disabled style="display:none;"></button>
+      <button id="btn-send-wsp" onclick="enviarCotizacionWhatsApp()" disabled style="display:none;"></button>
     </div>
 
     <!-- DB Manager toggle -->
@@ -1358,9 +1363,11 @@ function calcular() {
   rc.style.display = 'block';
 
   document.getElementById('btn-imprimir').disabled = false;
+  document.getElementById('btn-imprimir').style.opacity = '1';
+  const btnEnviar = document.getElementById('btn-enviar-accion');
+  if (btnEnviar) { btnEnviar.disabled = false; btnEnviar.style.opacity = '1'; }
   if (typeof habilitarEnvios === 'function') habilitarEnvios();
-  // Cotizador público: siempre ofrecer contacto
-  setTimeout(() => abrirModalContacto(), 800);
+  // NO abrir modal automáticamente — el usuario hace clic en "Enviar Cotización"
   showToast('✅ Primas calculadas correctamente');
   rc.scrollIntoView({behavior:'smooth', block:'start'});
 
@@ -2064,8 +2071,7 @@ function imprimirPDF() {
     footer();
 
     const nombreLimpio = (c.contratante || 'Cotizacion').trim();
-    const ncotStr = (c.ncot || '');
-    doc.save(nombreLimpio + ' (' + ncotStr + ') - Simulacion_Moto.pdf');
+    doc.save(nombreLimpio + ' - Simulacion_Moto.pdf');
     btn.disabled = false;
     btn.innerHTML = originalText;
     showToast('\u2705 PDF descargado correctamente');
@@ -2094,7 +2100,11 @@ function limpiar() {
   document.getElementById('descuento-display').textContent = '0%';
   document.getElementById('results-card').style.display = 'none';
   document.getElementById('btn-imprimir').disabled = true;
+  document.getElementById('btn-imprimir').style.opacity = '0.5';
+  const btnEnviar = document.getElementById('btn-enviar-accion');
+  if (btnEnviar) { btnEnviar.disabled = true; btnEnviar.style.opacity = '0.5'; }
   window._cotizacion = null;
+  window._clienteContacto = null;
   actualizarResumen();
   showToast('Formulario limpiado');
 }
@@ -2536,6 +2546,35 @@ function guardarContactoModal() {
   showToast('✅ Datos de contacto guardados');
 }
 
+function guardarYEnviar() {
+  const email = document.getElementById('mc-email').value.trim();
+  const wsp   = document.getElementById('mc-wsp').value.trim();
+  const canal = _mcWsp && !_mcEmail ? 'whatsapp' : 'email';
+
+  // Validate: need at least one contact
+  if (canal === 'email' && !email) {
+    showToast('⚠️ Ingresa un correo electrónico', true); return;
+  }
+  if (canal === 'whatsapp' && !wsp) {
+    showToast('⚠️ Ingresa un número de WhatsApp', true); return;
+  }
+
+  // Save contact info
+  if (!window._clienteContacto) window._clienteContacto = {};
+  if (email) window._clienteContacto.email   = email;
+  if (wsp)   window._clienteContacto.celular = wsp;
+  window._clienteContacto.canal = canal;
+
+  cerrarModalContacto();
+
+  // Fire send immediately
+  if (canal === 'whatsapp') {
+    enviarCotizacionWhatsApp();
+  } else {
+    enviarCotizacionEmail();
+  }
+}
+
 
 
 
@@ -2545,7 +2584,7 @@ function guardarContactoModal() {
 <div class="modal-contacto-overlay" id="modal-contacto">
   <div class="modal-contacto">
     <h3>📬 ¿Cómo enviar la cotización?</h3>
-    <p>No se recibieron datos de contacto por solicitud. Ingresa el email y/o WhatsApp del cliente para enviarle la cotización, o descárgala directamente en PDF.</p>
+    <p>Ingresa el contacto del cliente y elige cómo enviar la cotización.</p>
     <div class="contact-check-row">
       <div class="contact-check-opt selected" id="mc-opt-email" onclick="mcToggle('email')">
         <div class="opt-icon">📧</div>
@@ -2565,8 +2604,10 @@ function guardarContactoModal() {
       <input type="tel" id="mc-wsp" class="form-control" placeholder="+56 9 1234 5678">
     </div>
     <div class="modal-contacto-actions">
-      <button class="btn-mc skip" onclick="cerrarModalContacto()">Solo PDF</button>
-      <button class="btn-mc ok" onclick="guardarContactoModal()">Guardar y Enviar</button>
+      <button class="btn-mc skip" onclick="cerrarModalContacto()">Cancelar</button>
+      <button class="btn-mc ok" id="mc-btn-enviar" onclick="guardarYEnviar()">
+        Enviar →
+      </button>
     </div>
   </div>
 </div>
